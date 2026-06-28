@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de resultados — Motoalflo SA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f8f7f4;color:#1a1a18;min-height:100vh;padding:2rem}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:20px;font-weight:600;color:#1a1a18;margin-bottom:4px}
+.sub{font-size:13px;color:#898781;margin-bottom:1.5rem}
+.tabs{display:flex;gap:2px;background:#ebebea;border:0.5px solid #d4d3cc;border-radius:8px;padding:3px;width:fit-content;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:6px 14px;font-size:13px;border-radius:6px;border:none;background:none;cursor:pointer;color:#52514e;font-family:'Inter',sans-serif}
+.tab.on{background:#fff;color:#1a1a18;font-weight:500;border:0.5px solid #d4d3cc;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.panel{background:#fff;border:0.5px solid #d4d3cc;border-radius:12px;padding:1.25rem}
+.panel h3{font-size:11px;font-weight:500;color:#898781;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem}
+.ej-bar{display:flex;align-items:center;gap:12px;background:#f0efea;border:0.5px solid #d4d3cc;border-radius:10px;padding:.6rem 1rem;margin-bottom:1rem;flex-wrap:wrap}
+.ej-lbl{font-size:12px;color:#898781;flex-shrink:0}
+.ej-chips{display:flex;gap:6px}
+.chip{padding:4px 14px;border-radius:50px;font-size:13px;font-weight:500;border:0.5px solid #d4d3cc;background:none;color:#52514e;cursor:pointer;font-family:'Inter',sans-serif}
+.chip:hover{background:#e8e7e2}
+.chip.y2023.on{background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+.chip.y2024.on{background:#dcfce7;color:#15803d;border-color:#86efac}
+.chip.y2025.on{background:#fef9c3;color:#a16207;border-color:#fde047}
+.chip.personalizado.on{background:#e0e7ff;color:#3730a3;border-color:#a5b4fc}
+.ej-badge{margin-left:auto;font-size:12px;font-weight:500;padding:3px 10px;border-radius:50px;background:#e0e7ff;color:#3730a3;white-space:nowrap}
+.sl-row{margin-bottom:.8rem}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+.sl-nm{font-size:13px;color:#52514e}
+.sl-vl{font-size:13px;font-weight:500;color:#1a1a18;min-width:90px;text-align:right}
+.sl-vl.p{color:#1baf7a}.sl-vl.n{color:#e34948}
+input[type=range]{width:100%;accent-color:#3b82f6}
+hr.div{border:none;border-top:0.5px solid #e8e7e2;margin:.7rem 0}
+.kpi-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.kpi{background:#f0efea;border-radius:8px;padding:.7rem}
+.kv{font-size:20px;font-weight:600;color:#1a1a18}
+.kl{font-size:11px;color:#898781;margin-top:2px}
+.kd{font-size:12px;margin-top:2px}
+.kd.up{color:#1baf7a}.kd.dn{color:#e34948}.kd.neu{color:#898781}
+.cr{width:100%;border-collapse:collapse}
+.cr td{padding:5px 0;font-size:13px;border-bottom:0.5px solid #e8e7e2}
+.cr tr:last-child td{border-bottom:none}
+.cr .csub{color:#52514e;padding-left:8px}
+.cr .ctot{font-weight:500;color:#1a1a18}
+.cr .chl td{background:#eff6ff;color:#1d4ed8;font-weight:500;padding:5px 8px;border-radius:4px;border-bottom:none}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:.75rem}
+.b{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500}
+.b.ok{background:#dcfce7;color:#15803d}
+.b.wn{background:#fef9c3;color:#a16207}
+.b.bd{background:#fee2e2;color:#b91c1c}
+.chart-w{position:relative;height:240px;margin-top:.5rem}
+.chart-w2{position:relative;height:200px}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:.5rem}
+.li{display:flex;align-items:center;gap:5px;font-size:12px;color:#52514e}
+.ls{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.yr-card{background:#f0efea;border-radius:8px;padding:.75rem}
+.alert-box{background:#fef9c3;border:0.5px solid #fde047;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;color:#a16207}
+.alert-box.danger{background:#fee2e2;border-color:#fca5a5;color:#b91c1c}
+.full{grid-column:1/-1}
+.reset-b{margin-top:1rem;padding:5px 14px;font-size:12px;cursor:pointer;border-radius:8px;border:0.5px solid #d4d3cc;background:none;color:#52514e;font-family:'Inter',sans-serif}
+.reset-b:hover{background:#f0efea}
+@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}.ej-bar{flex-direction:column;align-items:flex-start}.ej-badge{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Simulador de resultados — Motoalflo SA</h1>
+<p class="sub">NIF A79147351 · Ejercicios 2023, 2024 y 2025</p>
+
+<div class="tabs">
+  <button class="tab on" onclick="setTab('sim')">Simulador</button>
+  <button class="tab" onclick="setTab('hist')">Histórico 2023–2025</button>
+  <button class="tab" onclick="setTab('alerta')">Análisis de alerta</button>
+  <button class="tab" onclick="setTab('reparto')">Reparto de beneficios</button>
+</div>
+
+<div id="p-sim">
+  <div class="ej-bar">
+    <span class="ej-lbl">Ejercicio cargado:</span>
+    <div class="ej-chips">
+      <button class="chip y2023" id="chip-2023" onclick="loadYear(2023)">2023</button>
+      <button class="chip y2024" id="chip-2024" onclick="loadYear(2024)">2024</button>
+      <button class="chip y2025 on" id="chip-2025" onclick="loadYear(2025)">2025</button>
+      <button class="chip personalizado" id="chip-per">Personalizado</button>
+    </div>
+    <span class="ej-badge" id="ej-badge">Ejercicio 2025</span>
+  </div>
+  <div class="g2">
+    <div class="panel">
+      <h3>Variables — <span id="panel-yr-label">ejercicio 2025</span></h3>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Ingresos de explotación</span><span class="sl-vl p" id="l-ing">0</span></div><input type="range" min="5000" max="60000" step="100" value="20230" id="s-ing"></div>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Otros gastos de explotación</span><span class="sl-vl n" id="l-gex">0</span></div><input type="range" min="0" max="30000" step="100" value="13335" id="s-gex"></div>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Amortización</span><span class="sl-vl n" id="l-amo">0</span></div><input type="range" min="0" max="10000" step="100" value="2563" id="s-amo"></div>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Otros resultados</span><span class="sl-vl" id="l-oth">0</span></div><input type="range" min="-5000" max="5000" step="50" value="0" id="s-oth"></div>
+      <hr class="div"><h3>Variables financieras</h3>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Ingresos financieros</span><span class="sl-vl p" id="l-fin">0</span></div><input type="range" min="0" max="40000" step="100" value="13530" id="s-fin"></div>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Gastos financieros</span><span class="sl-vl n" id="l-gfin">0</span></div><input type="range" min="0" max="10000" step="100" value="0" id="s-gfin"></div>
+      <hr class="div"><h3>Impuesto</h3>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Tipo impositivo IS (%)</span><span class="sl-vl" id="l-tax">0</span></div><input type="range" min="0" max="35" step="1" value="25" id="s-tax"></div>
+      <div style="display:flex;gap:6px;margin-top:.5rem;flex-wrap:wrap">
+        <button class="reset-b" onclick="loadYear(2025)">Cargar 2025</button>
+        <button class="reset-b" onclick="loadYear(2024)">Cargar 2024</button>
+        <button class="reset-b" onclick="loadYear(2023)">Cargar 2023</button>
+      </div>
+    </div>
+    <div>
+      <div class="kpi-g">
+        <div class="kpi"><div class="kv" id="k-expl">—</div><div class="kl">Resultado explotación</div><div class="kd" id="k-expl-d"></div></div>
+        <div class="kpi"><div class="kv" id="k-bat">—</div><div class="kl">Resultado antes IS</div><div class="kd" id="k-bat-d"></div></div>
+        <div class="kpi"><div class="kv" id="k-neto">—</div><div class="kl">Resultado neto</div><div class="kd" id="k-neto-d"></div></div>
+        <div class="kpi"><div class="kv" id="k-mgn">—</div><div class="kl">Margen neto</div><div class="kd" id="k-mgn-d"></div></div>
+      </div>
+      <div class="panel">
+        <h3>Cuenta de resultados — <span id="cr-yr-label">2025</span></h3>
+        <table class="cr">
+          <tr><td class="csub">Ingresos explotación</td><td id="c-ing" style="text-align:right"></td></tr>
+          <tr><td class="csub">Otros gastos explotación</td><td id="c-gex" style="text-align:right"></td></tr>
+          <tr><td class="csub">Amortización</td><td id="c-amo" style="text-align:right"></td></tr>
+          <tr><td class="csub">Otros resultados</td><td id="c-oth" style="text-align:right"></td></tr>
+          <tr class="chl"><td>A) Resultado explotación</td><td id="c-rexp" style="text-align:right"></td></tr>
+          <tr><td class="csub">Ingresos financieros</td><td id="c-fin" style="text-align:right"></td></tr>
+          <tr><td class="csub">Gastos financieros</td><td id="c-gfin" style="text-align:right"></td></tr>
+          <tr><td class="ctot">B) Resultado financiero</td><td id="c-rfin" style="text-align:right"></td></tr>
+          <tr class="chl"><td>C) Resultado antes IS</td><td id="c-bat" style="text-align:right"></td></tr>
+          <tr><td class="csub">Impuesto sobre beneficios</td><td id="c-imp" style="text-align:right"></td></tr>
+          <tr class="chl"><td>D) Resultado neto</td><td id="c-neto" style="text-align:right"></td></tr>
+        </table>
+        <div class="badges" id="bds"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="p-hist" style="display:none">
+  <div class="alert-box"><strong>Gastos de explotación 2025:</strong> suben de 3.192 € (2024) a 13.335 € (+318%). El resultado neto cae de 24.892 € a 13.397 € (−46%).</div>
+  <div class="panel full" style="margin-bottom:1rem">
+    <h3>Evolución de partidas clave 2023–2025</h3>
+    <div class="leg"><span class="li"><span class="ls" style="background:#2a78d6"></span>2023</span><span class="li"><span class="ls" style="background:#1baf7a"></span>2024</span><span class="li"><span class="ls" style="background:#eda100"></span>2025</span></div>
+    <div class="chart-w"><canvas id="ch-hist"></canvas></div>
+  </div>
+  <div class="g3">
+    <div class="yr-card"><div style="font-size:11px;color:#898781;font-weight:500;text-transform:uppercase;letter-spacing:.06em">2023</div><div style="font-size:18px;font-weight:600;color:#2a78d6;margin:2px 0">18.109 €</div><div style="font-size:12px;color:#898781">Resultado neto</div><hr class="div"><table class="cr" style="font-size:12px"><tr><td class="csub">Ingr. explot.</td><td style="text-align:right">19.087 €</td></tr><tr><td class="csub">Otros gastos</td><td style="text-align:right;color:#e34948">−7.834 €</td></tr><tr><td class="csub">Amortización</td><td style="text-align:right;color:#e34948">−2.563 €</td></tr><tr class="chl"><td>Result. explot.</td><td style="text-align:right">8.691 €</td></tr><tr><td class="csub">Ingr. financieros</td><td style="text-align:right">11.550 €</td></tr><tr class="chl"><td>Antes IS</td><td style="text-align:right">20.241 €</td></tr><tr><td class="csub">IS</td><td style="text-align:right;color:#e34948">−2.132 €</td></tr><tr class="chl"><td>Neto</td><td style="text-align:right">18.109 €</td></tr></table></div>
+    <div class="yr-card"><div style="font-size:11px;color:#898781;font-weight:500;text-transform:uppercase;letter-spacing:.06em">2024</div><div style="font-size:18px;font-weight:600;color:#1baf7a;margin:2px 0">24.892 €</div><div style="font-size:12px;color:#1baf7a">+37% vs 2023</div><hr class="div"><table class="cr" style="font-size:12px"><tr><td class="csub">Ingr. explot.</td><td style="text-align:right">20.359 €</td></tr><tr><td class="csub">Otros gastos</td><td style="text-align:right;color:#e34948">−3.192 €</td></tr><tr><td class="csub">Amortización</td><td style="text-align:right;color:#e34948">−2.563 €</td></tr><tr><td class="csub">Otros resultados</td><td style="text-align:right">353 €</td></tr><tr class="chl"><td>Result. explot.</td><td style="text-align:right">14.958 €</td></tr><tr><td class="csub">Ingr. financieros</td><td style="text-align:right">13.530 €</td></tr><tr class="chl"><td>Antes IS</td><td style="text-align:right">28.488 €</td></tr><tr><td class="csub">IS</td><td style="text-align:right;color:#e34948">−3.596 €</td></tr><tr class="chl"><td>Neto</td><td style="text-align:right">24.892 €</td></tr></table></div>
+    <div class="yr-card"><div style="font-size:11px;color:#898781;font-weight:500;text-transform:uppercase;letter-spacing:.06em">2025</div><div style="font-size:18px;font-weight:600;color:#e34948;margin:2px 0">13.397 €</div><div style="font-size:12px;color:#e34948">−46% vs 2024</div><hr class="div"><table class="cr" style="font-size:12px"><tr><td class="csub">Ingr. explot.</td><td style="text-align:right">20.230 €</td></tr><tr><td class="csub">Otros gastos</td><td style="text-align:right;color:#e34948">−13.335 €</td></tr><tr><td class="csub">Amortización</td><td style="text-align:right;color:#e34948">−2.563 €</td></tr><tr class="chl"><td>Result. explot.</td><td style="text-align:right;color:#a16207">4.333 €</td></tr><tr><td class="csub">Ingr. financieros</td><td style="text-align:right">13.530 €</td></tr><tr class="chl"><td>Antes IS</td><td style="text-align:right">17.863 €</td></tr><tr><td class="csub">IS</td><td style="text-align:right;color:#e34948">−4.466 €</td></tr><tr class="chl"><td>Neto</td><td style="text-align:right">13.397 €</td></tr></table></div>
+  </div>
+</div>
+
+<div id="p-alerta" style="display:none">
+  <div class="alert-box danger"><strong>Punto crítico 2025:</strong> resultado de explotación 4.333 €. Sin ingresos financieros (13.530 €) habría pérdidas de −9.002 €.</div>
+  <div class="g2" style="margin-bottom:1rem">
+    <div class="panel">
+      <h3>Simulación de sensibilidad</h3>
+      <div class="sl-row" style="margin-top:.5rem"><div class="sl-top"><span class="sl-nm">Ingresos financieros (€)</span><span class="sl-vl" id="a-fin-lbl">13.530 €</span></div><input type="range" min="0" max="20000" step="100" value="13530" id="a-fin"></div>
+      <div class="sl-row"><div class="sl-top"><span class="sl-nm">Gastos explotación (€)</span><span class="sl-vl n" id="a-gex-lbl">13.335 €</span></div><input type="range" min="3000" max="20000" step="100" value="13335" id="a-gex"></div>
+      <hr class="div">
+      <table class="cr">
+        <tr><td class="csub">Resultado explotación base</td><td style="text-align:right">4.333 €</td></tr>
+        <tr><td class="csub">Ajuste por gastos</td><td id="a-adj" style="text-align:right"></td></tr>
+        <tr class="chl"><td>Explotación ajustada</td><td id="a-expl" style="text-align:right"></td></tr>
+        <tr><td class="csub">Ingresos financieros</td><td id="a-fin-val" style="text-align:right"></td></tr>
+        <tr class="chl"><td>Antes IS</td><td id="a-bat" style="text-align:right"></td></tr>
+        <tr><td class="csub">IS (25%)</td><td id="a-imp" style="text-align:right"></td></tr>
+        <tr class="chl"><td>Resultado neto</td><td id="a-neto" style="text-align:right"></td></tr>
+      </table>
+      <div id="a-badge" class="badges"></div>
+    </div>
+    <div class="panel">
+      <h3>Curva resultado neto vs ingresos financieros</h3>
+      <div class="chart-w2"><canvas id="ch-eq"></canvas></div>
+      <p style="font-size:12px;color:#898781;margin-top:.5rem">Línea roja = umbral de pérdidas. Gastos 2025 fijos.</p>
+    </div>
+  </div>
+  <div class="panel full">
+    <h3>Ratios de alerta — tres ejercicios</h3>
+    <div class="g3">
+      <div class="yr-card"><div style="font-size:11px;color:#898781;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Dependencia financiera</div><div style="display:flex;gap:8px;margin-top:4px;align-items:baseline"><span style="font-size:18px;font-weight:600;color:#2a78d6">57%</span><span style="font-size:12px;color:#1baf7a;font-weight:500">47%</span><span style="font-size:12px;color:#e34948;font-weight:600">76%</span></div><div style="font-size:11px;color:#898781;margin-top:4px">2023 · 2024 · 2025 — % resultado antes IS procedente de ingresos financieros</div></div>
+      <div class="yr-card"><div style="font-size:11px;color:#898781;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Margen de explotación</div><div style="display:flex;gap:8px;margin-top:4px;align-items:baseline"><span style="font-size:18px;font-weight:600;color:#2a78d6">46%</span><span style="font-size:12px;color:#1baf7a;font-weight:500">73%</span><span style="font-size:12px;color:#e34948;font-weight:600">21%</span></div><div style="font-size:11px;color:#898781;margin-top:4px">2023 · 2024 · 2025 — resultado explotación / ingresos explotación</div></div>
+      <div class="yr-card"><div style="font-size:11px;color:#898781;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Tipo IS efectivo</div><div style="display:flex;gap:8px;margin-top:4px;align-items:baseline"><span style="font-size:18px;font-weight:600;color:#2a78d6">10,5%</span><span style="font-size:12px;color:#1baf7a;font-weight:500">12,6%</span><span style="font-size:12px;color:#e34948;font-weight:600">25%</span></div><div style="font-size:11px;color:#898781;margin-top:4px">2023 · 2024 · 2025 — impuesto / resultado antes IS</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="p-reparto" style="display:none">
+  <div class="g2" style="margin-bottom:1rem">
+    <div class="panel">
+      <h3>Reparto resultado 2025 (propuesta)</h3>
+      <table class="cr"><tr><td class="csub">Resultado 2025</td><td style="text-align:right">13.397 €</td></tr><tr><td class="csub">Reservas voluntarias aportadas</td><td style="text-align:right">1.943 €</td></tr><tr class="chl"><td>Total base de reparto</td><td style="text-align:right">15.340 €</td></tr><tr><td class="csub">Reserva legal</td><td style="text-align:right">1.340 €</td></tr><tr><td class="csub">Dividendos</td><td style="text-align:right">14.000 €</td></tr><tr class="chl"><td>Total aplicación</td><td style="text-align:right">15.340 €</td></tr></table>
+      <div class="badges" style="margin-top:.75rem"><span class="b ok">Dividendo 14.000 €</span><span class="b wn">Reserva legal 1.340 €</span><span class="b wn">Dividendo = 91% de la base</span></div>
+    </div>
+    <div class="panel">
+      <h3>Reparto resultado 2024 (ejecutado)</h3>
+      <table class="cr"><tr><td class="csub">Resultado 2024</td><td style="text-align:right">24.892 €</td></tr><tr class="chl"><td>Total base de reparto</td><td style="text-align:right">24.892 €</td></tr><tr><td class="csub">Reserva legal</td><td style="text-align:right">2.489 €</td></tr><tr><td class="csub">Reservas voluntarias</td><td style="text-align:right">403 €</td></tr><tr><td class="csub">Dividendos</td><td style="text-align:right">22.000 €</td></tr><tr class="chl"><td>Total aplicación</td><td style="text-align:right">24.892 €</td></tr></table>
+      <div class="badges" style="margin-top:.75rem"><span class="b ok">Dividendo 22.000 €</span><span class="b wn">Reserva legal 2.489 €</span></div>
+    </div>
+  </div>
+  <div class="panel full">
+    <h3>Simulador de reparto libre</h3>
+    <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem">
+      <div><label style="font-size:12px;color:#898781;display:block;margin-bottom:3px">Resultado (€)</label><input type="number" id="r-base" value="13397" step="100" style="width:120px;font-size:14px;padding:6px 8px;border:0.5px solid #d4d3cc;border-radius:6px;font-family:'Inter',sans-serif"></div>
+      <div><label style="font-size:12px;color:#898781;display:block;margin-bottom:3px">Reservas voluntarias (€)</label><input type="number" id="r-rv" value="1943" step="100" style="width:120px;font-size:14px;padding:6px 8px;border:0.5px solid #d4d3cc;border-radius:6px;font-family:'Inter',sans-serif"></div>
+      <div><label style="font-size:12px;color:#898781;display:block;margin-bottom:3px">Dividendos (€)</label><input type="number" id="r-div" value="14000" step="100" style="width:120px;font-size:14px;padding:6px 8px;border:0.5px solid #d4d3cc;border-radius:6px;font-family:'Inter',sans-serif"></div>
+      <div><label style="font-size:12px;color:#898781;display:block;margin-bottom:3px">Reserva legal (%)</label><input type="number" id="r-rl" value="10" min="0" max="20" style="width:70px;font-size:14px;padding:6px 8px;border:0.5px solid #d4d3cc;border-radius:6px;font-family:'Inter',sans-serif"></div>
+    </div>
+    <div id="r-result"></div>
+    <p style="font-size:11px;color:#898781;margin-top:.75rem">* Reserva legal obligatoria hasta el 20% del capital social (art. 274 LSC).</p>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const f=v=>{const n=Math.round(v);return(n<0?'−':'')+Math.abs(n).toLocaleString('es-ES')+' €'};
+const fp=v=>(Math.round(v*10)/10).toFixed(1)+'%';
+const YR={2023:{ing:19087,gex:7834,amo:2563,oth:0,fin:11550,gfin:0,tax:10.5},2024:{ing:20359,gex:3192,amo:2563,oth:353,fin:13530,gfin:0,tax:12.6},2025:{ing:20230,gex:13335,amo:2563,oth:0,fin:13530,gfin:0,tax:25}};
+let activeYear=2025;
+function getV(){return{ing:+document.getElementById('s-ing').value,gex:+document.getElementById('s-gex').value,amo:+document.getElementById('s-amo').value,oth:+document.getElementById('s-oth').value,fin:+document.getElementById('s-fin').value,gfin:+document.getElementById('s-gfin').value,tax:+document.getElementById('s-tax').value};}
+function calc(v){const expl=v.ing-v.gex-v.amo+v.oth;const rfin=v.fin-v.gfin;const bat=expl+rfin;const imp=bat>0?bat*v.tax/100:0;const neto=bat-imp;const mgn=v.ing>0?neto/v.ing*100:0;return{expl,rfin,bat,imp,neto,mgn};}
+function getRef(y){const d=YR[y];const expl=d.ing-d.gex-d.amo+d.oth;const bat=expl+d.fin-d.gfin;const imp=bat>0?bat*d.tax/100:0;const neto=bat-imp;return{expl,bat,neto,mgn:d.ing>0?neto/d.ing*100:0};}
+function dlt(curr,ref,yl){const d=Math.round(curr-ref);if(Math.abs(d)<1)return`<span class="kd neu">= igual que ${yl}</span>`;const s=d>0?'+':'−';return`<span class="kd ${d>0?'up':'dn'}">${s}${Math.abs(d).toLocaleString('es-ES')} € vs ${yl}</span>`;}
+function detectYear(v){for(const[y,d]of Object.entries(YR)){if(Math.abs(v.ing-d.ing)<50&&Math.abs(v.gex-d.gex)<50&&Math.abs(v.fin-d.fin)<50)return parseInt(y);}return null;}
+function updateChips(y){['2023','2024','2025','per'].forEach(id=>{const el=document.getElementById('chip-'+(id==='per'?'per':id));if(el)el.className=el.className.replace(' on','');});if(y){const el=document.getElementById('chip-'+y);if(el)el.className+=' on';document.getElementById('ej-badge').textContent='Ejercicio '+y;document.getElementById('panel-yr-label').textContent='ejercicio '+y;document.getElementById('cr-yr-label').textContent=y;}else{document.getElementById('chip-per').className+=' on';document.getElementById('ej-badge').textContent='Escenario personalizado';document.getElementById('panel-yr-label').textContent='escenario personalizado';document.getElementById('cr-yr-label').textContent='escenario personalizado';}}
+function update(){const v=getV();const c=calc(v);const dy=detectYear(v);const ref=getRef(dy||activeYear||2025);const yl=dy||(activeYear||2025);if(!dy)updateChips(null);document.getElementById('l-ing').textContent=f(v.ing);document.getElementById('l-gex').textContent='−'+Math.round(v.gex).toLocaleString('es-ES')+' €';document.getElementById('l-amo').textContent='−'+Math.round(v.amo).toLocaleString('es-ES')+' €';const oe=document.getElementById('l-oth');oe.textContent=f(v.oth);oe.className='sl-vl '+(v.oth>=0?'p':'n');document.getElementById('l-fin').textContent=f(v.fin);document.getElementById('l-gfin').textContent='−'+Math.round(v.gfin).toLocaleString('es-ES')+' €';document.getElementById('l-tax').textContent=Math.round(v.tax)+'%';document.getElementById('c-ing').textContent=f(v.ing);document.getElementById('c-gex').textContent='−'+Math.round(v.gex).toLocaleString('es-ES')+' €';document.getElementById('c-amo').textContent='−'+Math.round(v.amo).toLocaleString('es-ES')+' €';document.getElementById('c-oth').textContent=f(v.oth);document.getElementById('c-rexp').textContent=f(c.expl);document.getElementById('c-fin').textContent=f(v.fin);document.getElementById('c-gfin').textContent='−'+Math.round(v.gfin).toLocaleString('es-ES')+' €';document.getElementById('c-rfin').textContent=f(c.rfin);document.getElementById('c-bat').textContent=f(c.bat);document.getElementById('c-imp').textContent='−'+Math.round(c.imp).toLocaleString('es-ES')+' €';document.getElementById('c-neto').textContent=f(c.neto);document.getElementById('k-expl').textContent=f(c.expl);document.getElementById('k-bat').textContent=f(c.bat);document.getElementById('k-neto').textContent=f(c.neto);document.getElementById('k-mgn').textContent=fp(c.mgn);document.getElementById('k-expl-d').innerHTML=dlt(c.expl,ref.expl,yl);document.getElementById('k-bat-d').innerHTML=dlt(c.bat,ref.bat,yl);document.getElementById('k-neto-d').innerHTML=dlt(c.neto,ref.neto,yl);const md=Math.round((c.mgn-ref.mgn)*10)/10;document.getElementById('k-mgn-d').innerHTML=`<span class="kd ${md>=0?'up':'dn'}">${md>=0?'+':''}${md.toFixed(1)}pp vs ${yl}</span>`;let b='';if(c.neto<0)b+='<span class="b bd">Pérdidas</span>';else if(c.neto>ref.neto*1.15)b+='<span class="b ok">Mejora significativa</span>';else if(c.neto>ref.neto)b+='<span class="b ok">Mejora vs año base</span>';if(c.rfin>0&&c.rfin/c.bat>0.7)b+='<span class="b wn">Alta dependencia financiera</span>';if(c.expl<0)b+='<span class="b bd">Explotación negativa</span>';else if(c.expl<5000)b+='<span class="b wn">Explotación débil</span>';document.getElementById('bds').innerHTML=b;}
+function loadYear(y){activeYear=y;const d=YR[y];document.getElementById('s-ing').value=d.ing;document.getElementById('s-gex').value=d.gex;document.getElementById('s-amo').value=d.amo;document.getElementById('s-oth').value=d.oth;document.getElementById('s-fin').value=d.fin;document.getElementById('s-gfin').value=d.gfin;document.getElementById('s-tax').value=d.tax;updateChips(y);update();}
+['s-ing','s-gex','s-amo','s-oth','s-fin','s-gfin','s-tax'].forEach(id=>{document.getElementById(id).addEventListener('input',()=>{const v=getV();if(!detectYear(v)){activeYear=null;updateChips(null);}update();});});
+let hC=null;
+function renderHist(){if(hC)return;hC=new Chart(document.getElementById('ch-hist'),{type:'bar',data:{labels:['Ingr. explot.','Gastos explot.','Result. explot.','Ingr. financ.','Antes IS','Neto'],datasets:[{label:'2023',data:[19087,-7834,8691,11550,20241,18109],backgroundColor:'#2a78d6'},{label:'2024',data:[20359,-3192,14958,13530,28488,24892],backgroundColor:'#1baf7a'},{label:'2025',data:[20230,-13335,4333,13530,17863,13397],backgroundColor:'#eda100'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},color:'#898781',autoSkip:false,maxRotation:30}},y:{ticks:{font:{size:10},color:'#898781',callback:v=>v.toLocaleString('es-ES')},grid:{color:'#e8e7e2'}}}}});}
+let eC=null;
+function renderEq(){if(eC)return;const pts=[];for(let fin=0;fin<=20000;fin+=500){const bat=4333+fin;const imp=bat>0?bat*.25:0;pts.push({x:fin,y:Math.round(bat-imp)});}eC=new Chart(document.getElementById('ch-eq'),{type:'line',data:{datasets:[{label:'Resultado neto',data:pts,borderColor:'#2a78d6',borderWidth:2,pointRadius:0,fill:false},{label:'Umbral cero',data:[{x:0,y:0},{x:20000,y:0}],borderColor:'#e34948',borderWidth:1.5,borderDash:[4,4],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{type:'linear',ticks:{callback:v=>v.toLocaleString('es-ES'),font:{size:10},color:'#898781'}},y:{ticks:{callback:v=>v.toLocaleString('es-ES'),font:{size:10},color:'#898781'},grid:{color:'#e8e7e2'}}}}});}
+function updateAlert(){const fin=+document.getElementById('a-fin').value;const gex=+document.getElementById('a-gex').value;document.getElementById('a-fin-lbl').textContent=f(fin);document.getElementById('a-gex-lbl').textContent='−'+Math.round(gex).toLocaleString('es-ES')+' €';const adj=13335-gex;const ea=4333+adj;const bat=ea+fin;const imp=bat>0?bat*.25:0;const neto=bat-imp;document.getElementById('a-adj').textContent=(adj>=0?'+':'')+Math.round(adj).toLocaleString('es-ES')+' €';document.getElementById('a-expl').textContent=f(ea);document.getElementById('a-fin-val').textContent=f(fin);document.getElementById('a-bat').textContent=f(bat);document.getElementById('a-imp').textContent='−'+Math.round(Math.max(0,imp)).toLocaleString('es-ES')+' €';document.getElementById('a-neto').textContent=f(neto);let b='';if(neto<0)b='<span class="b bd">Pérdidas</span>';else if(neto<5000)b='<span class="b wn">Resultado muy bajo</span>';else if(neto>13397)b='<span class="b ok">Mejora vs 2025</span>';document.getElementById('a-badge').innerHTML=b;}
+document.getElementById('a-fin').addEventListener('input',updateAlert);
+document.getElementById('a-gex').addEventListener('input',updateAlert);
+function updateReparto(){const base=+document.getElementById('r-base').value||0;const rv=+document.getElementById('r-rv').value||0;const div=+document.getElementById('r-div').value||0;const rlP=+document.getElementById('r-rl').value||10;const total=base+rv;const rl=Math.round(total*rlP/100);const dR=Math.min(div,Math.max(0,total-rl));const rem=Math.round(total-rl-dR);const w=div>total-rl?'<span class="b bd">Dividendo supera lo distribuible</span>':'';document.getElementById('r-result').innerHTML=`<table class="cr"><tr><td class="csub">Resultado del ejercicio</td><td style="text-align:right">${f(base)}</td></tr><tr><td class="csub">Reservas voluntarias aportadas</td><td style="text-align:right">${f(rv)}</td></tr><tr class="chl"><td>Total base de reparto</td><td style="text-align:right">${f(total)}</td></tr><tr><td class="csub">Reserva legal (${rlP}%)</td><td style="text-align:right">${f(rl)}</td></tr><tr><td class="csub">Dividendos</td><td style="text-align:right">${f(dR)}</td></tr><tr><td class="csub">Remanente / Reservas voluntarias</td><td style="text-align:right">${f(rem)}</td></tr><tr class="chl"><td>Total aplicación</td><td style="text-align:right">${f(total)}</td></tr></table><div class="badges" style="margin-top:.5rem">${w}</div>`;}
+['r-base','r-rv','r-div','r-rl'].forEach(id=>document.getElementById(id).addEventListener('input',updateReparto));
+function setTab(t){['sim','hist','alerta','reparto'].forEach(p=>document.getElementById('p-'+p).style.display=p===t?'block':'none');document.querySelectorAll('.tab').forEach((b,i)=>{const ts=['sim','hist','alerta','reparto'];b.className='tab'+(ts[i]===t?' on':'');});if(t==='hist')renderHist();if(t==='alerta'){renderEq();updateAlert();}if(t==='reparto')updateReparto();}
+loadYear(2025);
+</script>
+</body>
+</html>
